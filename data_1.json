@@ -1,0 +1,30 @@
+{
+    "ProgramA": {
+        "prioridad": 2,
+        "id": "A",
+        "inicio": 0,
+        "nombre": "programA.exe",
+        "duracion": 7
+    },
+    "ProgramC": {
+        "prioridad": 0,
+        "id": "C",
+        "inicio": 0,
+        "nombre": "programC.exe",
+        "duracion": 5
+    },
+    "ProgramB": {
+        "prioridad": 3,
+        "id": "B",
+        "inicio": 0,
+        "nombre": "programB.exe",
+        "duracion": 3
+    },
+    "ProgramD": {
+        "prioridad": 1,
+        "id": "D",
+        "inicio": 0,
+        "nombre": "programD.exe",
+        "duracion": 1
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "ProgramH": {
+        "id": "H",
+        "duracion": 2,
+        "nombre": "programH.exe",
+        "prioridad": 7,
+        "inicio": 21
+    },
+    "ProgramE": {
+        "id": "E",
+        "duracion": 2,
+        "nombre": "programE.exe",
+        "prioridad": 2,
+        "inicio": 4
+    },
+    "ProgramC": {
+        "id": "C",
+        "duracion": 6,
+        "nombre": "programC.exe",
+        "prioridad": 2,
+        "inicio": 5
+    },
+    "ProgramF": {
+        "id": "F",
+        "duracion": 7,
+        "nombre": "programF.exe",
+        "prioridad": 3,
+        "inicio": 20
+    },
+    "ProgramA": {
+        "id": "A",
+        "duracion": 7,
+        "nombre": "programA.exe",
+        "prioridad": 6,
+        "inicio": 6
+    },
+    "ProgramB": {
+        "id": "B",
+        "duracion": 4,
+        "nombre": "programB.exe",
+        "prioridad": 3,
+        "inicio": 1
+    },
+    "ProgramD": {
+        "id": "D",
+        "duracion": 1,
+        "nombre": "programD.exe",
+        "prioridad": 3,
+        "inicio": 7
+    },
+    "ProgramG": {
+        "id": "G",
+        "duracion": 4,
+        "nombre": "programG.exe",
+        "prioridad": 1,
+        "inicio": 25
+    },
+    "ProgramI": {
+        "id": "I",
+        "duracion": 7,
+        "nombre": "programI.exe",
+        "prioridad": 5,
+        "inicio": 20
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "ProgramB": {
+        "prioridad": 1,
+        "id": "B",
+        "inicio": 1,
+        "nombre": "programB.exe",
+        "duracion": 4
+    },
+    "ProgramD": {
+        "prioridad": 0,
+        "id": "D",
+        "inicio": 17,
+        "nombre": "programD.exe",
+        "duracion": 4
+    },
+    "ProgramA": {
+        "prioridad": 5,
+        "id": "A",
+        "inicio": 0,
+        "nombre": "programA.exe",
+        "duracion": 7
+    },
+    "ProgramC": {
+        "prioridad": 0,
+        "id": "C",
+        "inicio": 15,
+        "nombre": "programC.exe",
+        "duracion": 3
+    },
+    "ProgramF": {
+        "prioridad": 1,
+        "id": "F",
+        "inicio": 30,
+        "nombre": "programF.exe",
+        "duracion": 4
+    },
+    "ProgramE": {
+        "prioridad": 3,
+        "id": "E",
+        "inicio": 32,
+        "nombre": "programE.exe",
+        "duracion": 2
+    }
+}

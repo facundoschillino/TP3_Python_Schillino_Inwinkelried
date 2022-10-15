@@ -1,0 +1,37 @@
+{
+    "process1": {
+        "id": "A",
+        "nombre": "program1.exe",
+        "inicio": 0,
+        "duracion": 7,
+        "prioridad": 0
+    },
+    "process2": {
+        "id": "B",
+        "nombre": "program2.exe",
+        "inicio": 1,
+        "duracion": 4,
+        "prioridad": 1
+    },
+    "process3": {
+        "id": "C",
+        "nombre": "program3.exe",
+        "inicio": 4,
+        "duracion": 3,
+        "prioridad": 2
+    },
+    "process4": {
+        "id": "D",
+        "nombre": "program4.exe",
+        "inicio": 7,
+        "duracion": 4,
+        "prioridad": 0
+    },
+    "process5": {
+        "id": "E",
+        "nombre": "program5.exe",
+        "inicio": 7,
+        "duracion": 2,
+        "prioridad": 3
+    }
+}
