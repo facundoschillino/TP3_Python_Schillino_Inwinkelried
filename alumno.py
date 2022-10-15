@@ -140,6 +140,32 @@ def SJN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         Proceso: siguiente proceso a ejecutar
         None: si no se encuentra un proceso a ejecutar
     """
+    if proceso_actual is not None:
+        if not proceso_actual.fin():
+            esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
+            proceso_actual.ejecutar()
+            return proceso_actual
+        else:
+            menor = cola_procesos[0]
+            menor = SiguientePorSJN(menor, cola_procesos, tiempo_actual)
+            esperaProcesos(menor, cola_procesos, tiempo_actual)
+            if menor.inicio > tiempo_actual:
+                menor = None
+            else:
+                if not menor.fin():
+                    menor.ejecutar()
+            return menor
+    else:
+        menor = cola_procesos[0]
+        menor = SiguientePorSJN(menor, cola_procesos, tiempo_actual)
+        esperaProcesos(menor, cola_procesos, tiempo_actual)
+        if menor.inicio > tiempo_actual:
+            menor = None
+        else:
+            if not menor.fin():
+                menor.ejecutar()
+        return menor
+
 
 
 def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -163,7 +189,13 @@ def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         None: si no se encuentra un proceso a ejecutar
     """
     # TODO: codificar
-    raise NotImplementedError
+
+
+
+
+
+
+
 
 
 def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -184,8 +216,9 @@ def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         Proceso: siguiente proceso a ejecutar
         None: si no se encuentra un proceso a ejecutar
     """
-    # TODO: codificar
     raise NotImplementedError
+
+
 
 
 def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -305,4 +338,9 @@ def SiguientePorPrioridad(procesoingresado: Proceso, cola_procesos: List[Proceso
                 procesoingresado = proceso
     return procesoingresado
 
-def SiguientePorSJN
+def SiguientePorSJN(procesoingresado : Proceso, cola_procesos: List[Proceso], tiempo_actual: int ):
+    for proceso in cola_procesos:
+        if not proceso.fin() and proceso.inicio <= tiempo_actual:
+            if procesoingresado.duracion > proceso.duracion or procesoingresado.fin() or procesoingresado.inicio > tiempo_actual:
+                procesoingresado = proceso
+    return procesoingresado
