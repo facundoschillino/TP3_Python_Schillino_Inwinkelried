@@ -189,12 +189,19 @@ def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         None: si no se encuentra un proceso a ejecutar
     """
     # TODO: codificar
+    ''' de alguna manera tengo que ir guardando el tiempo restante de cada proceso en ejecucion pero no me salee!!!!!!!!!!'''
+    if proceso_actual is not None:
+        if not proceso_actual.fin():
+            tiempo_restante_proceso = (proceso_actual.duracion + tiempo_actual )- (proceso_actual.inicio + tiempo_actual) '''flashee con esta formula cualquiera no le des bola'''
+
+            buscar_proceso_menor_tiempo_restante(cola_procesos,'''aca iria el tiempo restante del proceso actual que tengo que calcular''' )
 
 
-
-
-
-
+    def buscar_proceso_menor_tiempo_restante(cola_procesos : list[Proceso], tiempo_restante_proceso_actual: int):
+        proceso_a_ejecutar : int
+        for proceso in cola_procesos
+            if proceso.duracion < tiempo_restante_proceso_actual
+                return proceso_a_ejecutar
 
 
 
@@ -217,8 +224,6 @@ def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         None: si no se encuentra un proceso a ejecutar
     """
     raise NotImplementedError
-
-
 
 
 def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
