@@ -20,20 +20,6 @@ __all__ = [
 ]
 
 
-def esperaProcesos(procesoingresado: Proceso, cola_procesos: List[Proceso], tiempo_actual: int):
-    for proceso in cola_procesos:
-        if not proceso.fin() and proceso.inicio <= tiempo_actual:
-            if proceso is not procesoingresado:
-                proceso.esperar()
-
-
-def SiguientePorPrioridad(procesoingresado: Proceso, cola_procesos: List[Proceso], tiempo_actual: int):
-    for proceso in cola_procesos:
-        if not proceso.fin() and proceso.inicio <= tiempo_actual:
-            if procesoingresado.prioridad < proceso.prioridad or procesoingresado.fin() or procesoingresado.inicio > tiempo_actual:
-                menor = proceso
-
-
 def FIFO(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
     """
     Algoritmo FIFO
@@ -167,7 +153,6 @@ def SJN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         return menor
 
 
-
 def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
     """
     Algoritmo SRT (Apropiativo)
@@ -192,17 +177,17 @@ def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
     ''' de alguna manera tengo que ir guardando el tiempo restante de cada proceso en ejecucion pero no me salee!!!!!!!!!!'''
     if proceso_actual is not None:
         if not proceso_actual.fin():
-            tiempo_restante_proceso = (proceso_actual.duracion + tiempo_actual )- (proceso_actual.inicio + tiempo_actual) '''flashee con esta formula cualquiera no le des bola'''
+            tiempo_restante_proceso = (proceso_actual.duracion + tiempo_actual) - (proceso_actual.inicio + tiempo_actual)
+            '''flashee con esta formula cualquiera no le des bola'''
 
-            buscar_proceso_menor_tiempo_restante(cola_procesos,'''aca iria el tiempo restante del proceso actual que tengo que calcular''' )
+            buscar_proceso_menor_tiempo_restante(cola_procesos,
+                                                 '''aca iria el tiempo restante del proceso actual que tengo que calcular''')
 
-
-    def buscar_proceso_menor_tiempo_restante(cola_procesos : list[Proceso], tiempo_restante_proceso_actual: int):
-        proceso_a_ejecutar : int
-        for proceso in cola_procesos
-            if proceso.duracion < tiempo_restante_proceso_actual
+    def buscar_proceso_menor_tiempo_restante(cola_procesos: list[Proceso], tiempo_restante_proceso_actual: int):
+        proceso_a_ejecutar: int
+        for proceso in cola_procesos:
+            if proceso.duracion < tiempo_restante_proceso_actual:
                 return proceso_a_ejecutar
-
 
 
 def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -223,7 +208,42 @@ def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         Proceso: siguiente proceso a ejecutar
         None: si no se encuentra un proceso a ejecutar
     """
-    raise NotImplementedError
+    # (tiempo de espera + tiempo de ejecucion)/ tiempo de ejecucion
+    if proceso_actual is not None:
+        if not proceso_actual.fin():
+            esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
+            proceso_actual.ejecutar()
+            return proceso_actual
+        else:
+            menor = cola_procesos[0]
+            for proceso in cola_procesos:
+                if not proceso.fin() and proceso.inicio <= tiempo_actual:
+                    PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
+                    PMenor = ((menor.espera + menor.duracion) / menor.duracion)
+                    if PProceso > PMenor or menor.fin() or menor.inicio > tiempo_actual:
+                        menor = proceso
+            esperaProcesos(menor, cola_procesos, tiempo_actual)
+            if menor.inicio > tiempo_actual:
+                menor = None
+            else:
+                if not menor.fin():
+                    menor.ejecutar()
+            return menor
+    else:
+        menor = cola_procesos[0]
+        for proceso in cola_procesos:
+            if not proceso.fin() and proceso.inicio >= tiempo_actual:
+                PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
+                PMenor = ((menor.espera + menor.duracion) / menor.duracion)
+                if PProceso > PMenor or menor.fin() or menor.inicio < tiempo_actual:
+                    menor = proceso
+        esperaProcesos(menor, cola_procesos, tiempo_actual)
+        if menor.inicio > tiempo_actual:
+            menor = None
+        else:
+            if not menor.fin():
+                menor.ejecutar()
+        return menor
 
 
 def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -247,12 +267,23 @@ def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proces
         Proceso: siguiente proceso a ejecutar
         None: si no se encuentra un proceso a ejecutar
     """
-    # TODO: codificar
-    raise NotImplementedError
+    menor = cola_procesos[0]
+    for proceso in cola_procesos:
+        if not proceso.fin() and proceso.inicio <= tiempo_actual:
+            PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
+            PMenor = ((menor.espera + menor.duracion) / menor.duracion)
+            if PProceso > PMenor or menor.fin() or menor.inicio > tiempo_actual:
+                menor = proceso
+    esperaProcesos(menor, cola_procesos, tiempo_actual)
+    if menor.inicio > tiempo_actual:
+        menor = None
+    else:
+        if not menor.fin():
+            menor.ejecutar()
+    return menor
 
 
 def Prioridad(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
-
     if proceso_actual is not None:
         if not proceso_actual.fin():
             esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
@@ -299,7 +330,22 @@ def PrioridadA(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
         None: si no se encuentra un proceso a ejecutar
     """
     # TODO: codificar
-    raise NotImplementedError
+    menor = cola_procesos[0]
+    for proceso in cola_procesos:
+        if not proceso.fin() and proceso.inicio <= tiempo_actual:
+            if menor.prioridad < proceso.prioridad or menor.fin() or menor.inicio > tiempo_actual:
+                menor = proceso
+            else:
+                if menor.prioridad == proceso.prioridad:
+                    if proceso.id > menor.id:
+                        menor = proceso
+    esperaProcesos(menor, cola_procesos, tiempo_actual)
+    if menor.inicio > tiempo_actual:
+        menor = None
+    else:
+        if not menor.fin():
+            menor.ejecutar()
+    return menor
 
 
 def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int,
@@ -335,15 +381,19 @@ def esperaProcesos(procesoingresado: Proceso, cola_procesos: List[Proceso], tiem
                 proceso.esperar()
 
 
-
 def SiguientePorPrioridad(procesoingresado: Proceso, cola_procesos: List[Proceso], tiempo_actual: int):
     for proceso in cola_procesos:
         if not proceso.fin() and proceso.inicio <= tiempo_actual:
             if procesoingresado.prioridad < proceso.prioridad or procesoingresado.fin() or procesoingresado.inicio > tiempo_actual:
                 procesoingresado = proceso
+            else:
+                if procesoingresado.prioridad == proceso.prioridad:
+                    if proceso.id > procesoingresado.id:
+                        procesoingresado = proceso
     return procesoingresado
 
-def SiguientePorSJN(procesoingresado : Proceso, cola_procesos: List[Proceso], tiempo_actual: int ):
+
+def SiguientePorSJN(procesoingresado: Proceso, cola_procesos: List[Proceso], tiempo_actual: int):
     for proceso in cola_procesos:
         if not proceso.fin() and proceso.inicio <= tiempo_actual:
             if procesoingresado.duracion > proceso.duracion or procesoingresado.fin() or procesoingresado.inicio > tiempo_actual:
