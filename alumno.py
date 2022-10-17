@@ -7,7 +7,7 @@ Algoritmos de Planificación del Procesador
 from typing import List, Optional
 from clases import Proceso
 
-# TODO: completar con los datos de los integrantes del grupo
+
 __autores__ = [
     ["Santiago Inwinkelried Apellido", "email@email.com"],
     ["Facundo Schillino", "facundoschillino01@gmail.com"]
@@ -173,33 +173,17 @@ def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         Proceso: siguiente proceso a ejecutar
         None: si no se encuentra un proceso a ejecutar
     """
-    # TODO: codificar
-    """
-    if proceso_actual is not None:
-        tiempo_restante_proceso = proceso_actual.duracion - proceso_actual.procesado
-        menor = SiguientePorSRT(proceso_actual, cola_procesos, tiempo_restante_proceso, tiempo_actual)
-        if proceso_actual.inicio < tiempo_actual:
-            proceso_actual.ejecutar()
-            esperaProcesos(proceso_actual,cola_procesos,tiempo_actual)
-    else:
-        menor = cola_procesos[0]
-        esperaProcesos(proceso_actual,cola_procesos,tiempo_actual)
-        
-    """
     menor = cola_procesos[0]
-    tiempo_restante_menor = menor.duracion - menor.procesado
     for proceso in cola_procesos:
         if not proceso.fin() and proceso.inicio <= tiempo_actual:
             tiempo_restante_proceso = proceso.duracion - proceso.procesado
+            tiempo_restante_menor = menor.duracion - menor.procesado
             if tiempo_restante_menor > tiempo_restante_proceso or menor.fin() or menor.inicio > tiempo_actual:
                 menor = proceso
-        else:
-            if menor.inicio > tiempo_actual:
-                menor = None
             else:
-                if not menor.fin():
-                    menor.ejecutar()
-            return menor
+                if tiempo_restante_menor == tiempo_restante_proceso:
+                    if proceso.id > menor.id:
+                        menor = proceso
     esperaProcesos(menor, cola_procesos, tiempo_actual)
     if menor.inicio > tiempo_actual:
         menor = None
@@ -423,10 +407,7 @@ def SiguientePorSRT(proceso_ingresado: Proceso, cola_procesos: list[Proceso], ti
 
     for proceso in cola_procesos:
         tiempo_restante_proceso = proceso.duracion - proceso.procesado
-        if proceso.duracion < tiempo_restante_proceso_actual and proceso.inicio > tiempo_actual:
-            if proceso_ingresado is None:
-                proceso_ingresado = proceso
-            else:
-                if proceso.duracion < proceso_ingresado.duracion and proceso.inicio > tiempo_actual:
+        if tiempo_restante_proceso < tiempo_restante_proceso_actual and proceso.inicio > tiempo_actual:
+            if proceso_ingresado is not None:
                     proceso_ingresado = proceso
     return proceso_ingresado
