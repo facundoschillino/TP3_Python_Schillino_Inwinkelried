@@ -194,7 +194,6 @@ def SRT(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
             if tiempo_restante_menor > tiempo_restante_proceso or menor.fin() or menor.inicio > tiempo_actual:
                 menor = proceso
         else:
-            menor = SiguientePorSRT(menor,cola_procesos,tiempo_restante_menor,tiempo_actual)
             if menor.inicio > tiempo_actual:
                 menor = None
             else:
@@ -423,6 +422,7 @@ def SiguientePorSJN(procesoingresado: Proceso, cola_procesos: List[Proceso], tie
 def SiguientePorSRT(proceso_ingresado: Proceso, cola_procesos: list[Proceso], tiempo_restante_proceso_actual: int, tiempo_actual : int):
 
     for proceso in cola_procesos:
+        tiempo_restante_proceso = proceso.duracion - proceso.procesado
         if proceso.duracion < tiempo_restante_proceso_actual and proceso.inicio > tiempo_actual:
             if proceso_ingresado is None:
                 proceso_ingresado = proceso
