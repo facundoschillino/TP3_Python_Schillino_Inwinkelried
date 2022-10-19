@@ -374,8 +374,17 @@ def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
         None: si no se encuentra un proceso a ejecutar
     """
     # TODO: codificar
-    raise NotImplementedError
 
+    if proceso_actual is not None:
+        # tengo un proceso
+        if not proceso_actual.fin() and quantum < proceso_actual.
+            # si no terminó
+            for proceso in cola_procesos:                                    #hago esperar a todos los de la cola
+                if not proceso.fin() and proceso.inicio <= tiempo_actual:
+                    if proceso is not proceso_actual:
+                        proceso.esperar()
+            proceso_actual.ejecutar()
+            return proceso_actual
 
 def esperaProcesos(procesoingresado: Proceso, cola_procesos: List[Proceso], tiempo_actual: int):
     for proceso in cola_procesos:
