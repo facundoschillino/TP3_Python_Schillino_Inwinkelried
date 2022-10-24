@@ -212,6 +212,41 @@ def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         None: si no se encuentra un proceso a ejecutar
     """
     # (tiempo de espera + tiempo de ejecucion)/ tiempo de ejecucion
+    menor = cola_procesos[0]
+    for proceso in cola_procesos:
+        if not proceso.fin() and proceso.inicio <= tiempo_actual:
+            PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
+            PMenor = ((menor.espera + menor.duracion) / menor.duracion)
+            if PProceso > PMenor or menor.fin() or menor.inicio > tiempo_actual:
+                menor = proceso
+    esperaProcesos(menor, cola_procesos, tiempo_actual)
+    preguntarsiestalisto(menor, tiempo_actual)
+
+
+
+
+
+def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
+    """Algoritmo HRN (Semi-Apropiativo)
+
+    Algoritmo de planificación basado en la utilización de una cola HRN semi-apropiativa. Las condiciones para que se
+    evalúe nuevamente la prioridad de cada proceso son:
+    - Que no haya proceso en ejecución
+    - Que el proceso actual haya terminado
+    - Que algún otro proceso inicie en este instante
+
+    En base al proceso actual, la cola de procesos y el tiempo actual, la función debe retornar el siguiente proceso a
+    ejecutar.
+
+    Args:
+        proceso_actual: Proceso: proceso que está actualmente haciendo uso del procesador
+        cola_procesos: list: lista con los todos los procesos
+        tiempo_actual: int: instante de ejecución actual
+
+    Returns:
+        Proceso: siguiente proceso a ejecutar
+        None: si no se encuentra un proceso a ejecutar
+    """
     if proceso_actual is not None:
         if not proceso_actual.fin():
             esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
@@ -249,42 +284,6 @@ def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
         return menor
 
 
-def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
-    """Algoritmo HRN (Semi-Apropiativo)
-
-    Algoritmo de planificación basado en la utilización de una cola HRN semi-apropiativa. Las condiciones para que se
-    evalúe nuevamente la prioridad de cada proceso son:
-    - Que no haya proceso en ejecución
-    - Que el proceso actual haya terminado
-    - Que algún otro proceso inicie en este instante
-
-    En base al proceso actual, la cola de procesos y el tiempo actual, la función debe retornar el siguiente proceso a
-    ejecutar.
-
-    Args:
-        proceso_actual: Proceso: proceso que está actualmente haciendo uso del procesador
-        cola_procesos: list: lista con los todos los procesos
-        tiempo_actual: int: instante de ejecución actual
-
-    Returns:
-        Proceso: siguiente proceso a ejecutar
-        None: si no se encuentra un proceso a ejecutar
-    """
-    menor = cola_procesos[0]
-    for proceso in cola_procesos:
-        if not proceso.fin() and proceso.inicio <= tiempo_actual:
-            PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
-            PMenor = ((menor.espera + menor.duracion) / menor.duracion)
-            if PProceso > PMenor or menor.fin() or menor.inicio > tiempo_actual:
-                menor = proceso
-    esperaProcesos(menor, cola_procesos, tiempo_actual)
-    if menor.inicio > tiempo_actual:
-        menor = None
-    else:
-        if not menor.fin():
-            menor.ejecutar()
-    return menor
-
 
 def Prioridad(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
     if proceso_actual is not None:
@@ -296,12 +295,7 @@ def Prioridad(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Pr
             menor = cola_procesos[0]
             menor = SiguientePorPrioridad(menor, cola_procesos, tiempo_actual)
             esperaProcesos(menor, cola_procesos, tiempo_actual)
-            if menor.inicio > tiempo_actual:
-                menor = None
-            else:
-                if not menor.fin():
-                    menor.ejecutar()
-            return menor
+            preguntarsiestalisto(menor, tiempo_actual)
     else:
         menor = cola_procesos[0]
         menor = SiguientePorPrioridad(menor, cola_procesos, tiempo_actual)
@@ -343,12 +337,7 @@ def PrioridadA(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
                     if proceso.id > menor.id:
                         menor = proceso
     esperaProcesos(menor, cola_procesos, tiempo_actual)
-    if menor.inicio > tiempo_actual:
-        menor = None
-    else:
-        if not menor.fin():
-            menor.ejecutar()
-    return menor
+    preguntarsiestalisto(menor, tiempo_actual)
 
 
 def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int,
@@ -374,17 +363,70 @@ def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
         None: si no se encuentra un proceso a ejecutar
     """
     # TODO: codificar
-
-    if proceso_actual is not None:
-        # tengo un proceso
-        if not proceso_actual.fin() and quantum < proceso_actual.
-            # si no terminó
-            for proceso in cola_procesos:                                    #hago esperar a todos los de la cola
-                if not proceso.fin() and proceso.inicio <= tiempo_actual:
-                    if proceso is not proceso_actual:
-                        proceso.esperar()
+    if proceso_actual is not None :
+        if not proceso_actual.fin() and proceso_actual.quantum < quantum and proceso_actual.inicio >= tiempo_actual:
+            esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
             proceso_actual.ejecutar()
+            proceso_actual.quantum += 1
             return proceso_actual
+        else:
+            menor = cola_procesos[0]
+            for proceso in cola_procesos:
+                if not proceso.fin() and proceso.inicio <= tiempo_actual and proceso.quantum < quantum and proceso != proceso_actual:
+                    if menor.fin() or menor.quantum >= quantum:
+                        menor.quantum = 0
+                        menor = proceso
+                    else:
+                        if proceso.inicio == menor.inicio:
+                            if proceso.id < menor.id:
+                                menor = proceso
+                        else:
+                            if proceso.inicio < menor.inicio:
+                                menor = proceso
+            esperaProcesos(menor, cola_procesos, tiempo_actual)
+            if menor.inicio > tiempo_actual:
+                menor = None
+            else:
+                if not menor.fin():
+                    menor.ejecutar()
+                    menor.quantum += 1
+            return menor
+    else:
+        menor = cola_procesos[0]
+        for proceso in cola_procesos:
+            if not proceso.fin() and proceso.inicio <= tiempo_actual and proceso.quantum < quantum:
+                if menor.fin() or menor.quantum >= quantum:
+                    menor.quantum = 0
+                    menor = proceso
+                else:
+                    if proceso.inicio == menor.inicio:
+                        if proceso.id < menor.id:
+                            menor = proceso
+                    else:
+                        if proceso.inicio < menor.inicio:
+                            menor = proceso
+        esperaProcesos(menor, cola_procesos, tiempo_actual)
+
+        if menor.inicio > tiempo_actual:
+            menor = None
+        else:
+            if not menor.fin():
+                menor.ejecutar()
+                menor.quantum += 1
+        return menor
+
+
+
+
+
+def preguntarsiestalisto (menor : Proceso, tiempo_actual : int):
+    if menor.inicio > tiempo_actual:
+        menor = None
+    else:
+        if not menor.fin():
+            menor.ejecutar()
+    return menor
+
 
 def esperaProcesos(procesoingresado: Proceso, cola_procesos: List[Proceso], tiempo_actual: int):
     for proceso in cola_procesos:
