@@ -7,7 +7,6 @@ Algoritmos de Planificación del Procesador
 from typing import List, Optional
 from clases import Proceso
 
-
 __autores__ = [
     ["Santiago Inwinkelried Apellido", "email@email.com"],
     ["Facundo Schillino", "facundoschillino01@gmail.com"]
@@ -223,9 +222,6 @@ def HRN(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]
     preguntarsiestalisto(menor, tiempo_actual)
 
 
-
-
-
 def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
     """Algoritmo HRN (Semi-Apropiativo)
 
@@ -282,7 +278,6 @@ def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proces
             if not menor.fin():
                 menor.ejecutar()
         return menor
-
 
 
 def Prioridad(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -342,84 +337,40 @@ def PrioridadA(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
 
 def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int,
                quantum: int):
-    """
-    Algoritmo RoundRobin (Apropiativo)
 
-    ** Requerido para regularizar **
-
-    Algoritmo de planificación basado en la utilización de una cola por RoundRobin.
-
-    En base al proceso actual, la cola de procesos y el tiempo actual, la función debe retornar el siguiente proceso a
-    ejecutar.
-
-    Args:
-        proceso_actual: Proceso: proceso que está actualmente haciendo uso del procesador
-        cola_procesos: list: lista con los todos los procesos
-        tiempo_actual: int: instante de ejecución actual
-        quantum: int: quantum máximo del que dispone un proceso para uso del procesador
-
-    Returns:
-        Proceso: siguiente proceso a ejecutar
-        None: si no se encuentra un proceso a ejecutar
-    """
-    # TODO: codificar
-    if proceso_actual is not None :
-        if not proceso_actual.fin() and proceso_actual.quantum < quantum and proceso_actual.inicio >= tiempo_actual:
-            esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
-            proceso_actual.ejecutar()
-            proceso_actual.quantum += 1
-            return proceso_actual
-        else:
-            menor = cola_procesos[0]
-            for proceso in cola_procesos:
-                if not proceso.fin() and proceso.inicio <= tiempo_actual and proceso.quantum < quantum and proceso != proceso_actual:
-                    if menor.fin() or menor.quantum >= quantum:
-                        menor.quantum = 0
-                        menor = proceso
-                    else:
-                        if proceso.inicio == menor.inicio:
-                            if proceso.id < menor.id:
-                                menor = proceso
-                        else:
-                            if proceso.inicio < menor.inicio:
-                                menor = proceso
-            esperaProcesos(menor, cola_procesos, tiempo_actual)
-            if menor.inicio > tiempo_actual:
-                menor = None
-            else:
-                if not menor.fin():
-                    menor.ejecutar()
-                    menor.quantum += 1
-            return menor
+    if proceso_actual is not None and not proceso_actual.fin() and proceso_actual.quantum < quantum:
+        if proceso_actual.inicio > tiempo_actual:
+            return None
+        proceso_actual.ejecutar()
+        proceso_actual.quantum += 1
+        esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
+        return proceso_actual
     else:
-        menor = cola_procesos[0]
-        for proceso in cola_procesos:
-            if not proceso.fin() and proceso.inicio <= tiempo_actual and proceso.quantum < quantum:
-                if menor.fin() or menor.quantum >= quantum:
-                    menor.quantum = 0
-                    menor = proceso
-                else:
-                    if proceso.inicio == menor.inicio:
-                        if proceso.id < menor.id:
-                            menor = proceso
-                    else:
-                        if proceso.inicio < menor.inicio:
-                            menor = proceso
-        esperaProcesos(menor, cola_procesos, tiempo_actual)
-
-        if menor.inicio > tiempo_actual:
-            menor = None
+        cola_procesos[0].quantum == 0
+        if not cola_procesos[0].fin():
+            x = 0
+            for proceso in cola_procesos:
+                if proceso.inicio <= tiempo_actual and not proceso.fin():
+                    x += 1
+            cola_procesos.insert(x, cola_procesos[0])
         else:
-            if not menor.fin():
+            cola_procesos.append(cola_procesos[0])
+        del cola_procesos[0]
+
+        menor = cola_procesos[0]
+
+        if not menor.fin():
+            if menor.inicio > tiempo_actual:
+                return None
+            else:
+                menor.quantum = 0
                 menor.ejecutar()
+                esperaProcesos(menor, cola_procesos, tiempo_actual)
                 menor.quantum += 1
         return menor
 
 
-
-
-
-def preguntarsiestalisto (menor : Proceso, tiempo_actual : int):
+def preguntarsiestalisto(menor: Proceso, tiempo_actual: int):
     if menor.inicio > tiempo_actual:
         menor = None
     else:
@@ -454,11 +405,12 @@ def SiguientePorSJN(procesoingresado: Proceso, cola_procesos: List[Proceso], tie
                 procesoingresado = proceso
     return procesoingresado
 
-def SiguientePorSRT(proceso_ingresado: Proceso, cola_procesos: list[Proceso], tiempo_restante_proceso_actual: int, tiempo_actual : int):
 
+def SiguientePorSRT(proceso_ingresado: Proceso, cola_procesos: list[Proceso], tiempo_restante_proceso_actual: int,
+                    tiempo_actual: int):
     for proceso in cola_procesos:
         tiempo_restante_proceso = proceso.duracion - proceso.procesado
         if tiempo_restante_proceso < tiempo_restante_proceso_actual and proceso.inicio > tiempo_actual:
             if proceso_ingresado is not None:
-                    proceso_ingresado = proceso
+                proceso_ingresado = proceso
     return proceso_ingresado
