@@ -243,41 +243,11 @@ def HRNsa(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proces
         Proceso: siguiente proceso a ejecutar
         None: si no se encuentra un proceso a ejecutar
     """
-    if proceso_actual is not None:
-        if not proceso_actual.fin():
-            esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
-            proceso_actual.ejecutar()
-            return proceso_actual
-        else:
-            menor = cola_procesos[0]
-            for proceso in cola_procesos:
-                if not proceso.fin() and proceso.inicio <= tiempo_actual:
-                    PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
-                    PMenor = ((menor.espera + menor.duracion) / menor.duracion)
-                    if PProceso > PMenor or menor.fin() or menor.inicio > tiempo_actual:
-                        menor = proceso
-            esperaProcesos(menor, cola_procesos, tiempo_actual)
-            if menor.inicio > tiempo_actual:
-                menor = None
-            else:
-                if not menor.fin():
-                    menor.ejecutar()
-            return menor
-    else:
-        menor = cola_procesos[0]
-        for proceso in cola_procesos:
-            if not proceso.fin() and proceso.inicio >= tiempo_actual:
-                PProceso = ((proceso.espera + proceso.duracion) / proceso.duracion)
-                PMenor = ((menor.espera + menor.duracion) / menor.duracion)
-                if PProceso > PMenor or menor.fin() or menor.inicio < tiempo_actual:
-                    menor = proceso
-        esperaProcesos(menor, cola_procesos, tiempo_actual)
-        if menor.inicio > tiempo_actual:
-            menor = None
-        else:
-            if not menor.fin():
-                menor.ejecutar()
-        return menor
+
+
+
+
+
 
 
 def Prioridad(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int):
@@ -346,7 +316,7 @@ def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
         esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
         return proceso_actual
     else:
-        cola_procesos[0].quantum == 0
+
         if not cola_procesos[0].fin():
             x = 0
             for proceso in cola_procesos:
