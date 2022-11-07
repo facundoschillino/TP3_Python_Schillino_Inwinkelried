@@ -307,37 +307,44 @@ def PrioridadA(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[P
 
 def RoundRobin(proceso_actual: Optional[Proceso], cola_procesos: Optional[List[Proceso]], tiempo_actual: int,
                quantum: int):
+    if tiempo_actual == 0:
+        cola_procesos.sort(key=lambda x: x.id)
+        cola_procesos.sort(key=lambda x: x.inicio)
+        proceso_actual = cola_procesos[0]
 
     if proceso_actual is not None and not proceso_actual.fin() and proceso_actual.quantum < quantum:
         if proceso_actual.inicio > tiempo_actual:
             return None
         proceso_actual.ejecutar()
         proceso_actual.quantum += 1
-        esperaProcesos(proceso_actual, cola_procesos, tiempo_actual)
+        for proceso in cola_procesos:
+            if proceso is not proceso_actual and not proceso.fin() and proceso.inicio <= tiempo_actual:
+                proceso.esperar()
         return proceso_actual
     else:
 
         if not cola_procesos[0].fin():
-            x = 0
+            c = 0
             for proceso in cola_procesos:
                 if proceso.inicio <= tiempo_actual and not proceso.fin():
-                    x += 1
-            cola_procesos.insert(x, cola_procesos[0])
+                    c += 1
+            cola_procesos.insert(c, cola_procesos[0])
         else:
             cola_procesos.append(cola_procesos[0])
         del cola_procesos[0]
+        siguiente = cola_procesos[0]
 
-        menor = cola_procesos[0]
-
-        if not menor.fin():
-            if menor.inicio > tiempo_actual:
+        if not siguiente.fin():
+            if siguiente.inicio > tiempo_actual:
                 return None
             else:
-                menor.quantum = 0
-                menor.ejecutar()
-                esperaProcesos(menor, cola_procesos, tiempo_actual)
-                menor.quantum += 1
-        return menor
+                siguiente.quantum = 0
+                siguiente.ejecutar()
+                for proceso in cola_procesos:
+                    if proceso is not siguiente and not proceso.fin() and proceso.inicio <= tiempo_actual:
+                        proceso.esperar()
+                siguiente.quantum += 1
+        return siguiente
 
 
 def preguntarsiestalisto(menor: Proceso, tiempo_actual: int):
